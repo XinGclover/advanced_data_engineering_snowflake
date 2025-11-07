@@ -23,9 +23,9 @@ jobs:
       SNOWFLAKE_CONNECTIONS_ADVANCED_DATA_ENGINEERING_SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
       SNOWFLAKE_CONNECTIONS_ADVANCED_DATA_ENGINEERING_SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
 
-       # ✅ Compute branch name and deploy environment here (fixes PR merge issue)
-+      TARGET_BRANCH: ${{ (github.event_name == 'pull_request' && github.event.pull_request.merged) && github.base_ref || github.ref_name }}
-+      DEPLOY_ENV: ${{ (((github.event_name == 'pull_request' && github.event.pull_request.merged) && github.base_ref || github.ref_name) == 'staging') && 'staging' || 'prod' }}
+      # ✅ Compute branch name and deploy environment here (fixes PR merge issue)
+      TARGET_BRANCH: ${{ (github.event_name == 'pull_request' && github.event.pull_request.merged) && github.base_ref || github.ref_name }}
+      DEPLOY_ENV: ${{ (((github.event_name == 'pull_request' && github.event.pull_request.merged) && github.base_ref || github.ref_name) == 'staging') && 'staging' || 'prod' }}
 
 
     steps:
@@ -34,16 +34,16 @@ jobs:
         uses: actions/checkout@v4
 
 
-       # ✅ Print debug info to verify variable values
-+      - name: Print debug context
-+        run: |
-+          echo "EVENT_NAME=${GITHUB_EVENT_NAME}"
-+          echo "REF=${GITHUB_REF}"
-+          echo "REF_NAME=${GITHUB_REF_NAME}"
-+          echo "BASE_REF=${GITHUB_BASE_REF}"
-+          echo "HEAD_REF=${GITHUB_HEAD_REF}"
-+          echo "TARGET_BRANCH=${TARGET_BRANCH}"
-+          echo "DEPLOY_ENV=${DEPLOY_ENV}"
+      # ✅ Print debug info to verify variable values
+      - name: Print debug context
+        run: |
+          echo "EVENT_NAME=${GITHUB_EVENT_NAME}"
+          echo "REF=${GITHUB_REF}"
+          echo "REF_NAME=${GITHUB_REF_NAME}"
+          echo "BASE_REF=${GITHUB_BASE_REF}"
+          echo "HEAD_REF=${GITHUB_HEAD_REF}"
+          echo "TARGET_BRANCH=${TARGET_BRANCH}"
+          echo "DEPLOY_ENV=${DEPLOY_ENV}"
       
       # Install Snowflake CLI GitHub Action and point to config file
       - name: Install SnowflakeCLI
@@ -59,11 +59,11 @@ jobs:
       # Deploy templates to the data environment -
       - name: Deploy templates to data environment
         run: |
-+          set -euo pipefail
-+          echo "Using branch: ${TARGET_BRANCH}"
-+          echo "Deploying environment: ${DEPLOY_ENV}"
-+
-+          snow git execute @advanced_data_engineering_snowflake/branches/${TARGET_BRANCH}/module-1/hamburg_weather/pipeline/data/ \
-+            -D "env='${DEPLOY_ENV}'" \
-+            --database=COURSE_REPO \
-+            --schema=PUBLIC
+          set -euo pipefail
+          echo "Using branch: ${TARGET_BRANCH}"
+          echo "Deploying environment: ${DEPLOY_ENV}"
+
+          snow git execute @advanced_data_engineering_snowflake/branches/${TARGET_BRANCH}/module-1/hamburg_weather/pipeline/data/ \
+            -D "env='${DEPLOY_ENV}'" \
+            --database=COURSE_REPO \
+            --schema=PUBLIC
